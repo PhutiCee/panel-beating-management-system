@@ -11,10 +11,23 @@ The system will handle:
 - Invoices and payments
 - Employee management
 
+## 👥 Project Team  
+
+**Group 14**
+
+- **TP Sekwadi**  
+- **Mugeri R**  
+- **Ravhutulu M**  
+
+**Module:** Advanced Database Systems (Honours)  
+**Institution:** University of Limpopo  
+**Year:** 2026  
+
+
 ## 🏗 Technologies Used
 - Next.js (Frontend & Backend)
 - PostgreSQL (Database)
-- Prisma ORM (optional)
+- Prisma ORM
 - Tailwind CSS (UI)
 - Framer Motion (Animations)
 
