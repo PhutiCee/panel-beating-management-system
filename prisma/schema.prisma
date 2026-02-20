@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  RECEPTION
+  TECHNICIAN
+}
+
+enum JobStatus {
+  NEW
+  QUOTED
+  IN_PROGRESS
+  COMPLETED
+  INVOICED
+  CLOSED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  EFT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  role      Role     @default(RECEPTION)
+  createdAt DateTime @default(now())
+  jobs      Job[]    @relation("AssignedJobs")
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  email     String?   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime  @default(now())
+  vehicles  Vehicle[]
+  jobs      Job[]
+}
+
+model Vehicle {
+  id          String    @id @default(cuid())
+  vin         String?   @unique
+  make        String
+  model       String
+  year        Int?
+  regNumber   String?   @unique
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  jobs        Job[]
+  createdAt   DateTime  @default(now())
+}
+
+model Job {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  status       JobStatus     @default(NEW)
+  customerId   String
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicleId    String
+  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  assignedToId String?
+  assignedTo   User?         @relation("AssignedJobs", fields: [assignedToId], references: [id])
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  estimate     Estimate?
+  invoice      Invoice?
+  parts        JobPart[]
+  attachments  Attachment[]
+}
+
+model Estimate {
+  id        String   @id @default(cuid())
+  jobId     String   @unique
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  total     Decimal  @db.Decimal(12, 2)
+  notes     String?
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Part {
+  id        String    @id @default(cuid())
+  name      String
+  unitPrice Decimal   @db.Decimal(12, 2)
+  items     JobPart[]
+  createdAt DateTime  @default(now())
+}
+
+model JobPart {
+  id       String  @id @default(cuid())
+  jobId    String
+  job      Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  partId   String
+  part     Part    @relation(fields: [partId], references: [id], onDelete: Cascade)
+  quantity Int     @default(1)
+  price    Decimal @db.Decimal(12, 2)
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  jobId      String        @unique
+  job        Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  amount     Decimal       @db.Decimal(12, 2)
+  status     InvoiceStatus @default(DRAFT)
+  issuedAt   DateTime      @default(now())
+  payments   Payment[]
+}
+
+model Payment {
+  id          String         @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount      Decimal        @db.Decimal(12, 2)
+  method      PaymentMethod
+  paidAt      DateTime       @default(now())
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  url       String
+  type      String?
+  createdAt DateTime @default(now())
+}
