@@ -6,10 +6,12 @@ export default function VehiclesClient({ initialVehicles, customers }) {
   const [vehicles, setVehicles] = useState(initialVehicles || []);
   const [form, setForm] = useState({ make: "", model: "", year: "", regNumber: "", vin: "", customerId: "" });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     const payload = {
       ...form,
       year: form.year ? parseInt(form.year, 10) : null,
@@ -19,12 +21,27 @@ export default function VehiclesClient({ initialVehicles, customers }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    const created = await res.json();
     setLoading(false);
     if (res.ok) {
-      const created = await res.json();
       setVehicles([created, ...vehicles]);
       setForm({ make: "", model: "", year: "", regNumber: "", vin: "", customerId: "" });
+    } else {
+      setError(created.error || "Failed to save vehicle.");
     }
+  };
+
+  const removeVehicle = async (id) => {
+    setError("");
+    const res = await fetch(`/api/vehicles/${id}`, { method: "DELETE" });
+    const payload = await res.json();
+
+    if (!res.ok) {
+      setError(payload.error || "Failed to delete vehicle.");
+      return;
+    }
+
+    setVehicles(vehicles.filter((vehicle) => vehicle.id !== id));
   };
 
   return (
@@ -42,6 +59,11 @@ export default function VehiclesClient({ initialVehicles, customers }) {
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
+        {error ? (
+          <div className="sm:col-span-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            {error}
+          </div>
+        ) : null}
         <button disabled={loading} className="sm:col-span-3 px-4 py-2 rounded-md bg-black text-white dark:bg-white dark:text-black">
           {loading ? "Saving..." : "Add Vehicle"}
         </button>
@@ -49,10 +71,19 @@ export default function VehiclesClient({ initialVehicles, customers }) {
       <div className="grid gap-3">
         <AnimatePresence>
           {vehicles.map((v) => (
-            <motion.div key={v.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="p-4 border rounded-lg border-zinc-200 dark:border-zinc-800">
-              <div className="font-medium">{v.make} {v.model} {v.year || ""}</div>
-              <div className="text-sm text-zinc-500">{v.regNumber || "No reg"} · {v.vin || "No VIN"}</div>
-              <div className="text-sm text-zinc-500">Owner: {v.customer?.name || v.customerId}</div>
+            <motion.div key={v.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
+              <div>
+                <div className="font-medium">{v.make} {v.model} {v.year || ""}</div>
+                <div className="text-sm text-zinc-500">{v.regNumber || "No reg"} · {v.vin || "No VIN"}</div>
+                <div className="text-sm text-zinc-500">Owner: {v.customer?.name || v.customerId}</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeVehicle(v.id)}
+                className="rounded-md border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
+              >
+                Delete
+              </button>
             </motion.div>
           ))}
         </AnimatePresence>

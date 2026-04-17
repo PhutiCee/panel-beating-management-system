@@ -2,10 +2,20 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function JobsClient({ initialJobs, customers, vehicles }) {
+const JOB_STATUSES = ["NEW", "QUOTED", "IN_PROGRESS", "COMPLETED", "INVOICED", "CLOSED"];
+
+export default function JobsClient({ initialJobs, customers, vehicles, users }) {
   const [jobs, setJobs] = useState(initialJobs || []);
-  const [form, setForm] = useState({ title: "", description: "", customerId: "", vehicleId: "" });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    customerId: "",
+    vehicleId: "",
+    assignedToId: "",
+    status: "NEW",
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const vehiclesByCustomer = useMemo(() => {
     const map = {};
@@ -19,16 +29,26 @@ export default function JobsClient({ initialJobs, customers, vehicles }) {
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     const res = await fetch("/api/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form }),
     });
+    const payload = await res.json();
     setLoading(false);
     if (res.ok) {
-      const created = await res.json();
-      setJobs([created, ...jobs]);
-      setForm({ title: "", description: "", customerId: "", vehicleId: "" });
+      setJobs([payload, ...jobs]);
+      setForm({
+        title: "",
+        description: "",
+        customerId: "",
+        vehicleId: "",
+        assignedToId: "",
+        status: "NEW",
+      });
+    } else {
+      setError(payload.error || "Failed to save job.");
     }
   };
 
@@ -50,6 +70,22 @@ export default function JobsClient({ initialJobs, customers, vehicles }) {
             <option key={v.id} value={v.id}>{v.make} {v.model} {v.regNumber || ""}</option>
           ))}
         </select>
+        <select className="border px-3 py-2 rounded-md bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700" value={form.assignedToId} onChange={(e) => setForm({ ...form, assignedToId: e.target.value })}>
+          <option value="">Assign Employee</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>{user.name} ({user.role})</option>
+          ))}
+        </select>
+        <select className="border px-3 py-2 rounded-md bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+          {JOB_STATUSES.map((status) => (
+            <option key={status} value={status}>{status}</option>
+          ))}
+        </select>
+        {error ? (
+          <div className="sm:col-span-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            {error}
+          </div>
+        ) : null}
         <button disabled={loading} className="sm:col-span-2 px-4 py-2 rounded-md bg-black text-white dark:bg-white dark:text-black">
           {loading ? "Saving..." : "Add Job"}
         </button>
@@ -60,6 +96,7 @@ export default function JobsClient({ initialJobs, customers, vehicles }) {
             <motion.div key={j.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="p-4 border rounded-lg border-zinc-200 dark:border-zinc-800">
               <div className="font-medium">{j.title}</div>
               <div className="text-sm text-zinc-500">{j.customer?.name} · {j.vehicle ? `${j.vehicle.make} ${j.vehicle.model}` : ""} · {j.status}</div>
+              <div className="text-sm text-zinc-500">Assigned to: {j.assignedTo?.name || "Unassigned"} {j.invoice ? `· Invoice: ${j.invoice.status}` : ""}</div>
               <div className="text-sm text-zinc-500">{j.description || "No description"}</div>
             </motion.div>
           ))}
