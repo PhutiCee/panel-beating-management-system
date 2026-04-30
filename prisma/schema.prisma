@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -40,6 +39,7 @@ model User {
   name      String
   email     String   @unique
   phone     String?
+  password  String?
   role      Role     @default(RECEPTION)
   createdAt DateTime @default(now())
   jobs      Job[]    @relation("AssignedJobs")
@@ -57,33 +57,34 @@ model Customer {
 }
 
 model Vehicle {
-  id          String    @id @default(cuid())
-  vin         String?   @unique
-  make        String
-  model       String
-  year        Int?
-  regNumber   String?   @unique
-  customerId  String
-  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  jobs        Job[]
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  vin        String?  @unique
+  make       String
+  model      String
+  year       Int?
+  regNumber  String?  @unique
+  colour     String?
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  jobs       Job[]
+  createdAt  DateTime @default(now())
 }
 
 model Job {
-  id           String        @id @default(cuid())
+  id           String       @id @default(cuid())
   title        String
   description  String?
-  status       JobStatus     @default(NEW)
+  status       JobStatus    @default(NEW)
   customerId   String
-  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
   vehicleId    String
-  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   assignedToId String?
-  assignedTo   User?         @relation("AssignedJobs", fields: [assignedToId], references: [id])
+  assignedTo   User?        @relation("AssignedJobs", fields: [assignedToId], references: [id])
   startDate    DateTime?
   endDate      DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   estimate     Estimate?
   invoice      Invoice?
   parts        JobPart[]
@@ -103,6 +104,7 @@ model Estimate {
 model Part {
   id        String    @id @default(cuid())
   name      String
+  quantityInStock Int @default(0)
   unitPrice Decimal   @db.Decimal(12, 2)
   items     JobPart[]
   createdAt DateTime  @default(now())
@@ -116,25 +118,43 @@ model JobPart {
   part     Part    @relation(fields: [partId], references: [id], onDelete: Cascade)
   quantity Int     @default(1)
   price    Decimal @db.Decimal(12, 2)
+
+  @@unique([jobId, partId])
 }
 
 model Invoice {
-  id         String        @id @default(cuid())
-  jobId      String        @unique
-  job        Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  amount     Decimal       @db.Decimal(12, 2)
-  status     InvoiceStatus @default(DRAFT)
-  issuedAt   DateTime      @default(now())
-  payments   Payment[]
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  jobId         String        @unique
+  job           Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status        InvoiceStatus @default(DRAFT)
+  labourCost    Decimal       @default(0) @db.Decimal(12, 2)
+  vatRate       Decimal       @default(15) @db.Decimal(5, 2)
+  notes         String?
+  dueDate       DateTime?
+  sentAt        DateTime?
+  issuedAt      DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  lineItems     InvoiceLine[]
+  payments      Payment[]
+}
+
+model InvoiceLine {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Decimal @db.Decimal(12, 2)
 }
 
 model Payment {
-  id          String         @id @default(cuid())
-  invoiceId   String
-  invoice     Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  amount      Decimal        @db.Decimal(12, 2)
-  method      PaymentMethod
-  paidAt      DateTime       @default(now())
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount    Decimal       @db.Decimal(12, 2)
+  method    PaymentMethod
+  paidAt    DateTime      @default(now())
 }
 
 model Attachment {
