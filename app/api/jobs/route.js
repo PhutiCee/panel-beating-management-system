@@ -1,66 +1,36 @@
-import prisma from "@/lib/db";
-import { requirePermission } from "@/lib/auth";
-import {
-  asOptionalDate,
-  asOptionalString,
-  handleApiError,
-  requireString,
-} from "@/lib/api";
-import { PERMISSIONS } from "@/lib/permissions";
-import { NextResponse } from "next/server";
+import prisma from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
 export async function GET() {
-  try {
-    const jobs = await prisma.job.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        customer: true,
-        vehicle: true,
-        assignedTo: true,
-        parts: true,
-        invoice: { include: { payments: true } },
-        estimate: true,
-      },
-    });
-    return NextResponse.json(jobs);
-  } catch (error) {
-    return handleApiError(error);
-  }
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const where = session.user.role === 'TECHNICIAN' ? { assignedToId: session.user.id } : {};
+  const jobs = await prisma.job.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+    include: { customer: true, vehicle: true, assignedTo: true, invoice: { select: { id: true } } },
+  });
+  return NextResponse.json(jobs);
 }
 
 export async function POST(request) {
-  const access = requirePermission(request, PERMISSIONS.manageJobs);
-
-  if (access.error) {
-    return access.error;
-  }
-
-  try {
-    const data = await request.json();
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { id: data.vehicleId },
-      select: { customerId: true },
-    });
-
-    if (!vehicle || vehicle.customerId !== data.customerId) {
-      throw new Error("Selected vehicle does not belong to the selected customer.");
-    }
-
-    const job = await prisma.job.create({
-      data: {
-        title: requireString(data.title, "Title"),
-        description: asOptionalString(data.description),
-        status: data.status || "NEW",
-        customerId: data.customerId,
-        vehicleId: data.vehicleId,
-        assignedToId: asOptionalString(data.assignedToId),
-        startDate: asOptionalDate(data.startDate, "Start date"),
-        endDate: asOptionalDate(data.endDate, "End date"),
-      },
-      include: { customer: true, vehicle: true, assignedTo: true, invoice: true },
-    });
-    return NextResponse.json(job, { status: 201 });
-  } catch (error) {
-    return handleApiError(error);
-  }
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role === 'TECHNICIAN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const data = await request.json();
+  const job = await prisma.job.create({
+    data: {
+      title: data.title,
+      description: data.description || null,
+      status: data.status || 'NEW',
+      customerId: data.customerId,
+      vehicleId: data.vehicleId,
+      assignedToId: data.assignedToId || null,
+      startDate: data.startDate ? new Date(data.startDate) : null,
+      endDate: data.endDate ? new Date(data.endDate) : null,
+    },
+    include: { customer: true, vehicle: true, assignedTo: true, invoice: { select: { id: true } } },
+  });
+  return NextResponse.json(job, { status: 201 });
 }

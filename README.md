@@ -1,114 +1,321 @@
-# Panel Beating Management System
+# 🚗 Mangena Panel Beater — Management Information System
 
-## Project Overview
+A full-stack workshop management system designed for panel beating businesses to manage jobs, invoices, customers, vehicles, and staff roles through a structured digital workflow.
 
-This project is a full-stack web application for managing the daily operations of a panel beating business.
+Built as an Honours-level Advanced Database Systems project using modern web technologies.
 
-The system supports:
+---
 
-- customer management
-- vehicle records
-- repair job tracking
-- parts inventory
-- invoices and payments
-- employee management
-- demo role-based access
+## 📸 Application Screenshots
 
-## Project Team
+> Replace or extend these images in `/screenshots`
 
-**Group 14**
+### 🔐 Login
+
+![Login](./screenshots/auth-login.png)
+
+### 🧑‍💼 Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+### 🧾 Invoice Creation (admin)
+
+![Invoice](./screenshots/admin-create-invoice.png)
+
+### 🗑️ Admin Operations
+
+![Admin Delete](./screenshots/admin-delete-operations.png)
+
+### 🏢 Reception Dashboard
+
+![Reception Dashboard](./screenshots/reception-dashboard.png)
+
+### 🔧 Reception Operations
+
+![Reception Operations](./screenshots/reception-operations.png)
+
+### 🛠️ Technician Dashboard
+
+![Technician Dashboard](./screenshots/technicial-dashboard.png)
+
+---
+
+## 📌 System Overview
+
+This system digitises workshop operations:
+
+- Customer management
+- Vehicle registration per customer
+- Job card lifecycle tracking
+- Invoice generation and payment tracking
+- Role-based access control (Admin / Reception / Technician)
+
+---
+
+## 👥 Academic Context
+
+**Group 14 — University of Limpopo**  
+**Module:** Advanced Database Systems (Honours)  
+**Year:** 2026
+
+**Team Members:**
 
 - TP Sekwadi
 - Mugeri R
 - Ravhutulu M
 
-**Module:** Advanced Database Systems (Honours)  
-**Institution:** University of Limpopo  
-**Year:** 2026
+---
 
-## Technology Stack
+## 🏗️ Tech Stack
 
-- Next.js 16
-- React 19
-- PostgreSQL
+- Next.js 16 (Full-stack framework)
+- PostgreSQL (Relational database)
 - Prisma ORM
-- Tailwind CSS 4
+- Tailwind CSS
 - Framer Motion
 
-## Features Implemented
+---
 
-- dashboard with operational counts
-- customer creation and deletion
-- vehicle creation and deletion
-- job creation with customer-to-vehicle validation
-- employee management
-- parts inventory with stock quantity
-- invoice generation
-- payment recording
-- demo role switching for `ADMIN`, `RECEPTION`, and `TECHNICIAN`
+## 🔐 Roles & Permissions
 
-## Role Access Summary
+| Role       | Description                                 |
+| ---------- | ------------------------------------------- |
+| ADMIN      | Full system control (users, jobs, invoices) |
+| RECEPTION  | Customers, vehicles, jobs, invoices         |
+| TECHNICIAN | Assigned jobs only (status updates)         |
 
-- `ADMIN`: full access
-- `RECEPTION`: customer, vehicle, job, inventory, billing access
-- `TECHNICIAN`: read-oriented access for jobs and parts
+---
 
-The current build uses a cookie-based demo role selector in the navigation bar to simulate role-based access for academic demonstration purposes.
+## ⚙️ Core Features
 
-## API Documentation
+### 🧾 Job Management
 
-- [API specification](docs/API_SPEC.md)
-- [Backup plan](docs/BACKUP_PLAN.md)
+- Create and assign jobs
+- Track progress (New → In Progress → Completed → Invoiced → Closed)
 
-## Setup
+### 💰 Invoice System
 
-1. Install dependencies:
+- Create invoices from jobs
+- Itemised billing (parts, labour, VAT)
+- Send, edit, void, mark as paid
+
+### 👤 Customer & Vehicle Management
+
+- Customer profiles
+- Vehicle tracking with full history
+
+### 👨‍🔧 User Management
+
+- Admin-controlled staff accounts
+- Role-based access system
+
+---
+
+## 📊 System Design
+
+This project follows structured engineering principles:
+
+- Software Development Life Cycle (SDLC)
+- Database Development Life Cycle (DBLC)
+- ERD, Use Case, and Flow Diagrams (see `/docs`)
+
+---
+
+# 📡 API DOCUMENTATION
+
+All API routes are located under `/app/api`
+
+---
+
+## 🔐 Authentication
+
+### `GET/POST /api/auth/[...nextauth]`
+
+Handles authentication using NextAuth.
+
+---
+
+## 👤 Customers
+
+### `GET /api/customers`
+
+Fetch all customers
+
+### `POST /api/customers`
+
+Create new customer
+
+### `GET /api/customers/[id]`
+
+Get single customer
+
+### `PATCH /api/customers/[id]`
+
+Update customer
+
+### `DELETE /api/customers/[id]`
+
+Delete customer
+
+---
+
+## 🚗 Vehicles
+
+### `GET /api/vehicles`
+
+Fetch all vehicles
+
+### `POST /api/vehicles`
+
+Create vehicle
+
+### `GET /api/vehicles/[id]`
+
+Get vehicle details
+
+### `PATCH /api/vehicles/[id]`
+
+Update vehicle
+
+### `DELETE /api/vehicles/[id]`
+
+Delete vehicle
+
+---
+
+## 🧰 Jobs
+
+### `GET /api/jobs`
+
+Fetch all jobs
+
+### `POST /api/jobs`
+
+Create job
+
+### `GET /api/jobs/[id]`
+
+Get job details
+
+### `PATCH /api/jobs/[id]`
+
+Update job
+
+### `DELETE /api/jobs/[id]`
+
+Delete job
+
+---
+
+## 🧾 Invoices
+
+### `GET /api/invoices`
+
+Fetch all invoices
+
+### `POST /api/invoices`
+
+Create invoice from job
+
+### `GET /api/invoices/[id]`
+
+Get invoice details
+
+### `PATCH /api/invoices/[id]`
+
+Update invoice (edit / mark paid / void)
+
+### `POST /api/invoices/[id]/send`
+
+Send invoice to customer (email simulation or SMTP)
+
+---
+
+## 👨‍💼 Users
+
+### `GET /api/users`
+
+Fetch all users
+
+### `POST /api/users`
+
+Create user (Admin only)
+
+### `GET /api/users/[id]`
+
+Get user details
+
+### `PATCH /api/users/[id]`
+
+Update user
+
+### `DELETE /api/users/[id]`
+
+Delete user
+
+---
+
+## 🚀 Setup Instructions
 
 ```bash
 npm install
 ```
 
-2. Ensure PostgreSQL is running and update `.env` with a valid `DATABASE_URL`.
+### 3. Configure environment
 
-3. Generate Prisma client:
+Edit `.env.local` and set:
+
+- `DATABASE_URL` — your PostgreSQL connection string
+- `NEXTAUTH_SECRET` — any random string (at least 32 characters)
+- `NEXTAUTH_URL` — `http://localhost:3000` for development
+
+### 4. Push database schema
 
 ```bash
-npm run prisma:generate
+npx prisma db push
 ```
 
-4. Apply the schema to the database:
+### 5. Seed demo data
 
 ```bash
-npm run db:push
+node scripts/seed.js
 ```
 
-5. Start the development server:
+### 6. Start the app
 
 ```bash
 npm run dev
 ```
 
-## Useful Scripts
+Visit [http://localhost:3000](http://localhost:3000)
 
-- `npm run dev` - start the development server
-- `npm run build` - create a production build
-- `npm run start` - run the production build
-- `npm run lint` - run ESLint
-- `npm run prisma:generate` - regenerate Prisma client
-- `npm run db:push` - push schema changes to the database
+---
 
-## Project Structure
+## 🔑 Demo Accounts
 
-- `app/` - Next.js app router pages, API routes, and components
-- `lib/` - database, auth, permission, and API helpers
-- `prisma/` - Prisma schema
-- `docs/` - API and backup documentation
-- `instructions/` - supplied milestone and academic guidance documents
+| Role       | Email                   | Password             |
+| ---------- | ----------------------- | -------------------- |
+| Admin      | admin@mangena.co.za     | <ADMIN_PASSWORD>     |
+| Reception  | reception@mangena.co.za | <RECEPTION_PASSWORD> |
+| Technician | tech@mangena.co.za      | <TECH_PASSWORD>      |
 
-## Documentation Alignment
+---
 
-The remaining milestone items covered in this repository are:
+## 📈 Workflow Summary
 
-- completed software project
-- API specification
-- backup and recovery plan
+1. Job created
+2. Assigned to technician
+3. Job completed
+4. Invoice generated
+5. Sent to customer
+6. Payment marked as paid
+7. Job closed
+
+> To integrate real email sending, add your SMTP/API credentials to `.env.local`
+> and replace the simulation block in `app/api/invoices/[id]/send/route.js`
+
+---
+
+## 📌 Status
+
+🟢 **Production-ready academic system (Honours submission completed)**
