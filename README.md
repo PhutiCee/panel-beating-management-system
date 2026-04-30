@@ -268,6 +268,9 @@ Edit `.env.local` and set:
 - `DATABASE_URL` — your PostgreSQL connection string
 - `NEXTAUTH_SECRET` — any random string (at least 32 characters)
 - `NEXTAUTH_URL` — `http://localhost:3000` for development
+- `SEED_ADMIN_PASSWORD`=add_your_own_password
+- `SEED_RECEPTION_PASSWORD`=add_your_own_password
+- `SEED_TECH_PASSWORD`=add_your_own_password
 
 ### 4. Push database schema
 
@@ -293,11 +296,11 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 ## 🔑 Demo Accounts
 
-| Role       | Email                   | Password             |
-| ---------- | ----------------------- | -------------------- |
-| Admin      | admin@mangena.co.za     | <ADMIN_PASSWORD>     |
-| Reception  | reception@mangena.co.za | <RECEPTION_PASSWORD> |
-| Technician | tech@mangena.co.za      | <TECH_PASSWORD>      |
+| Role       | Email                   | Password              |
+| ---------- | ----------------------- | --------------------- |
+| Admin      | admin@mangena.co.za     | add_your_own_password |
+| Reception  | reception@mangena.co.za | add_your_own_password |
+| Technician | tech@mangena.co.za      | add_your_own_password |
 
 ---
 

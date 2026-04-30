@@ -24,9 +24,9 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // Users
-  const adminPass = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
-  const recPass = await bcrypt.hash(process.env.RECEPTION_PASSWORD, 12);
-  const techPass = await bcrypt.hash(process.env.TECH_PASSWORD, 12);
+  const adminPass = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD, 12);
+  const recPass = await bcrypt.hash(process.env.SEED_RECEPTION_PASSWORD, 12);
+  const techPass = await bcrypt.hash(process.env.SEED_TECH_PASSWORD, 12);
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@mangena.co.za' },
