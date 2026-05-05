@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const WrenchSVG = () => (
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4A8FE7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
     style={{ animation: 'spin-slow 8s linear infinite' }}>
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
   </svg>
 );
 
@@ -32,11 +32,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e?.preventDefault();
     setLoading(true); setError('');
-    const res = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
+    const res = await signIn('credentials', { email, password, redirect: false });
     setLoading(false);
     if (res?.ok) router.push(params.get('callbackUrl') || '/');
     else setError('Invalid email or password. Please try again.');
@@ -118,9 +114,9 @@ export default function LoginPage() {
           <div style={{ marginTop: 32, padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Role Access Summary</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.8 }}>
-              <div>🔵 <strong style={{ color: 'var(--text-light)' }}>Admin</strong> - Full access, user management</div>
-              <div>🟣 <strong style={{ color: 'var(--text-light)' }}>Reception</strong> - Customers, jobs, invoices</div>
-              <div>🟠 <strong style={{ color: 'var(--text-light)' }}>Technician</strong> - Assigned jobs only</div>
+              <div>🔵 <strong style={{ color: 'var(--text-light)' }}>Admin</strong> — Full access, user management</div>
+              <div>🟣 <strong style={{ color: 'var(--text-light)' }}>Reception</strong> — Customers, jobs, invoices</div>
+              <div>🟠 <strong style={{ color: 'var(--text-light)' }}>Technician</strong> — Assigned jobs only</div>
             </div>
           </div>
         </div>

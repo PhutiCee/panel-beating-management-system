@@ -1,52 +1,38 @@
-import prisma from "@/lib/db";
-import { requirePermission } from "@/lib/auth";
-import { handleApiError, asOptionalString, requireString } from "@/lib/api";
-import { PERMISSIONS } from "@/lib/permissions";
-import { NextResponse } from "next/server";
+import prisma from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import bcrypt from 'bcryptjs';
 
-export async function PUT(request, { params }) {
-  const access = requirePermission(request, PERMISSIONS.manageUsers);
+export async function PATCH(req, { params }) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { id } = await params;
+  const data = await req.json();
 
-  if (access.error) {
-    return access.error;
+  const updateData = {
+    name: data.name,
+    email: data.email,
+    phone: data.phone || null,
+    role: data.role,
+  };
+  if (data.password) {
+    updateData.password = await bcrypt.hash(data.password, 12);
   }
 
-  try {
-    const data = await request.json();
-    const user = await prisma.user.update({
-      where: { id: params.id },
-      data: {
-        name: requireString(data.name, "Name"),
-        email: requireString(data.email, "Email"),
-        phone: asOptionalString(data.phone),
-        role: data.role || "RECEPTION",
-      },
-      include: {
-        _count: {
-          select: {
-            jobs: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(user);
-  } catch (error) {
-    return handleApiError(error);
-  }
+  const updated = await prisma.user.update({
+    where: { id },
+    data: updateData,
+    select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+  });
+  return NextResponse.json(updated);
 }
 
-export async function DELETE(request, { params }) {
-  const access = requirePermission(request, PERMISSIONS.manageUsers);
-
-  if (access.error) {
-    return access.error;
-  }
-
-  try {
-    await prisma.user.delete({ where: { id: params.id } });
-    return NextResponse.json({ ok: true });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export async function DELETE(req, { params }) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { id } = await params;
+  if (id === session.user.id) return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 });
+  await prisma.user.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
 }

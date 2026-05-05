@@ -10,16 +10,16 @@ const fmt = (n) => `R ${Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',
 const BLANK_LINE = { description: '', quantity: 1, unitPrice: '' };
 
 const DocIcon = () => (
-  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="anim-float" style={{ color: 'var(--text-muted)' }}>
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="anim-float" style={{color:'var(--text-muted)'}}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
   </svg>
 );
 
 const SendIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
   </svg>
 );
 
@@ -106,7 +106,7 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
     setEditLabour(inv.labourCost.toString());
     setEditVat(inv.vatRate.toString());
     setEditNotes(inv.notes || '');
-    setEditDue(inv.dueDate ? new Date(inv.dueDate).toISOString().slice(0, 10) : '');
+    setEditDue(inv.dueDate ? inv.dueDate.slice(0, 10) : '');
   };
 
   const saveEdit = async (e) => {
@@ -269,7 +269,7 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
       {/* Filter bar */}
       <div className="filter-bar">
         <div className="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input className="search-inp" placeholder="Search invoice # or customer…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <div className="filter-chips">
@@ -315,7 +315,7 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
                       <td style={{ fontWeight: 700, color: 'var(--text)', fontSize: 14 }}>{fmt(total.grand)}</td>
                       <td><span className={`badge ${INV_STATUS[inv.status]}`}>{INV_LABELS[inv.status]}</span></td>
                       <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-                        {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('en-ZA') : <span style={{ fontStyle: 'italic' }}>—</span>}
+                        {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('en-ZA') : <span style={{fontStyle:'italic'}}>—</span>}
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>

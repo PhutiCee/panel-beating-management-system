@@ -5,18 +5,6 @@ node_modules/
 jspm_packages/
 .pnp.*
 .yarn/
-bower_components/
-web_modules/
-
-# ========================
-# Build Output
-# ========================
-.next/
-out/
-dist/
-build/
-coverage/
-.nyc_output
 
 # ========================
 # Logs
@@ -37,6 +25,19 @@ pids
 *.pid.lock
 
 # ========================
+# Coverage / Testing
+# ========================
+coverage/
+.nyc_output
+
+# ========================
+# Next.js / Build Output
+# ========================
+.next/
+out/
+dist/
+
+# ========================
 # Environment Variables
 # ========================
 .env
@@ -45,7 +46,7 @@ pids
 !.env.example
 
 # ========================
-# Prisma / Database
+# Prisma
 # ========================
 prisma/migrations/dev/
 *.db
@@ -61,8 +62,6 @@ prisma/migrations/dev/
 .stylelintcache
 .vitepress/cache
 .svelte-kit/
-*.tsbuildinfo
-.npm
 
 # ========================
 # OS Files
@@ -86,7 +85,3 @@ Thumbs.db
 # Misc
 # ========================
 *.tgz
-.grunt
-.lock-wscript
-.node_repl_history
-.yarn-integrity

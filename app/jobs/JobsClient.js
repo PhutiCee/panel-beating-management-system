@@ -10,8 +10,8 @@ const STATUS_CSS = { NEW: 'b-new', QUOTED: 'b-quoted', IN_PROGRESS: 'b-in_progre
 const BLANK = { title: '', description: '', customerId: '', vehicleId: '', assignedToId: '', startDate: '', endDate: '' };
 
 const WrenchIcon = () => (
-  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)', animation: 'spin-slow 6s linear infinite' }}>
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{color:'var(--text-muted)', animation:'spin-slow 6s linear infinite'}}>
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
   </svg>
 );
 
@@ -59,7 +59,7 @@ export default function JobsClient({ initialJobs, customers, vehicles, technicia
 
   const openEdit = (j) => {
     setEditJob(j);
-    setEditForm({ title: j.title, description: j.description || '', customerId: j.customerId, vehicleId: j.vehicleId, assignedToId: j.assignedToId || '', startDate: j.startDate ? new Date(j.startDate).toISOString().slice(0, 10) : '', endDate: j.endDate ? new Date(j.endDate).toISOString().slice(0, 10) : '', status: j.status });
+    setEditForm({ title: j.title, description: j.description || '', customerId: j.customerId, vehicleId: j.vehicleId, assignedToId: j.assignedToId || '', startDate: j.startDate ? j.startDate.slice(0, 10) : '', endDate: j.endDate ? j.endDate.slice(0, 10) : '', status: j.status });
   };
 
   const saveEdit = async (e) => {
@@ -144,7 +144,7 @@ export default function JobsClient({ initialJobs, customers, vehicles, technicia
       {/* Filter bar */}
       <div className="filter-bar">
         <div className="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input className="search-inp" placeholder="Search jobs or customers…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <div className="filter-chips">
@@ -179,7 +179,7 @@ export default function JobsClient({ initialJobs, customers, vehicles, technicia
                     </td>
                     <td>{j.customer?.name || '—'}</td>
                     <td style={{ fontSize: 12 }}>
-                      {j.vehicle ? <><div>{j.vehicle.make} {j.vehicle.model}</div><div style={{ color: 'var(--text-muted)' }}>{j.vehicle.regNumber || ''}</div></> : '—'}
+                      {j.vehicle ? <><div>{j.vehicle.make} {j.vehicle.model}</div><div style={{color:'var(--text-muted)'}}>{j.vehicle.regNumber || ''}</div></> : '—'}
                     </td>
                     <td style={{ color: j.assignedTo ? 'var(--text-light)' : 'var(--text-muted)', fontStyle: j.assignedTo ? 'normal' : 'italic', fontSize: 12 }}>
                       {j.assignedTo?.name || 'Unassigned'}

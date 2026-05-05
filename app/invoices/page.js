@@ -44,13 +44,11 @@ export default async function InvoicesPage({ searchParams }) {
   });
 
   return (
-    <div>
-      <InvoicesClient
-        initialInvoices={invoices.map(serializeInvoice)}
-        availableJobs={jobs}
-        userRole={session.user.role}
-        preselectedJob={preselectedJob}
-      />
-    </div>
+    <InvoicesClient
+      initialInvoices={invoices.map(serializeInvoice)}
+      availableJobs={jobs}
+      userRole={session.user.role}
+      preselectedJob={preselectedJob}
+    />
   );
 }
