@@ -6,15 +6,12 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const role = req.nextauth?.token?.role;
 
-    // Redirect authenticated users away from login
-    if (pathname === '/login') return NextResponse.redirect(new URL('/', req.url));
+    if (pathname === '/login' || pathname === '/register') return NextResponse.next();
 
-    // ADMIN-only: users
     if (pathname.startsWith('/users') && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/', req.url));
     }
 
-    // TECHNICIAN blocked from customers, vehicles, invoices
     if (role === 'TECHNICIAN' && (pathname.startsWith('/customers') || pathname.startsWith('/vehicles') || pathname.startsWith('/invoices'))) {
       return NextResponse.redirect(new URL('/jobs', req.url));
     }
@@ -24,7 +21,8 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        if (req.nextUrl.pathname === '/login') return true;
+        const { pathname } = req.nextUrl;
+        if (pathname === '/login' || pathname === '/register' || pathname.startsWith('/api/register')) return true;
         return !!token;
       },
     },

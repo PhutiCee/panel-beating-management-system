@@ -25,9 +25,15 @@ export async function POST(req) {
   if (job.invoice) return NextResponse.json({ error: 'This job already has an invoice' }, { status: 409 });
 
   // Generate invoice number
-  const count = await prisma.invoice.count();
   const year = new Date().getFullYear();
-  const invoiceNumber = `INV-${year}-${String(count + 1).padStart(4, '0')}`;
+  const lastInvoice = await prisma.invoice.findFirst({
+    where: { invoiceNumber: { startsWith: `INV-${year}-` } },
+    orderBy: { invoiceNumber: 'desc' },
+  });
+  const nextNum = lastInvoice
+    ? parseInt(lastInvoice.invoiceNumber.split('-')[2], 10) + 1
+    : 1;
+  const invoiceNumber = `INV-${year}-${String(nextNum).padStart(4, '0')}`;
 
   const invoice = await prisma.invoice.create({
     data: {
