@@ -23,6 +23,46 @@ const SendIcon = () => (
   </svg>
 );
 
+const numbersOnly = (e) => {
+  const allowed = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '.'];
+  if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+    e.preventDefault();
+  }
+};
+
+function LineItemsEditor({ lines, onAdd, onRemove, onUpdate }) {
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px 36px', gap: 8, marginBottom: 6 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Description</div>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Qty</div>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Unit Price</div>
+        <div />
+      </div>
+      {lines.map((l, i) => (
+        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px 36px', gap: 8, marginBottom: 8 }}>
+          <input className="inp" placeholder="e.g. Paint material" value={l.description}
+            onChange={e => onUpdate(i, 'description', e.target.value)} />
+          <input type="number" className="inp" min="0.1" step="0.1" placeholder="1" value={l.quantity}
+            onChange={e => onUpdate(i, 'quantity', e.target.value)} onKeyDown={numbersOnly} />
+          <input type="number" className="inp" min="0" placeholder="0.00" value={l.unitPrice}
+            onChange={e => onUpdate(i, 'unitPrice', e.target.value)} onKeyDown={numbersOnly} />
+          {lines.length > 1 && (
+            <button type="button" onClick={() => onRemove(i)}
+              style={{ background: 'var(--danger-muted)', color: 'var(--danger)', border: '1px solid var(--danger-border)', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>
+              ×
+            </button>
+          )}
+          {lines.length === 1 && <div />}
+        </div>
+      ))}
+      <button type="button" className="btn btn-ghost btn-sm" onClick={onAdd} style={{ marginTop: 4 }}>
+        + Add Line
+      </button>
+    </div>
+  );
+}
+
 export default function InvoicesClient({ initialInvoices, availableJobs, userRole, preselectedJob }) {
   const [invoices, setInvoices] = useState(initialInvoices || []);
   const [showForm, setShowForm] = useState(!!preselectedJob);
@@ -163,26 +203,6 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
     return matchFilter && matchSearch;
   }), [invoices, filter, search]);
 
-  const LineItemsEditor = ({ lines, onAdd, onRemove, onUpdate }) => (
-    <div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px 36px', gap: 8, marginBottom: 6 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Description</div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Qty</div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Unit Price</div>
-        <div />
-      </div>
-      {lines.map((l, i) => (
-        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px 36px', gap: 8, marginBottom: 8 }}>
-          <input className="inp" placeholder="e.g. Paint material" value={l.description} onChange={e => onUpdate(i, 'description', e.target.value)} />
-          <input type="number" className="inp" min="0.1" step="0.1" placeholder="1" value={l.quantity} onChange={e => onUpdate(i, 'quantity', e.target.value)} />
-          <input type="number" className="inp" min="0" placeholder="0.00" value={l.unitPrice} onChange={e => onUpdate(i, 'unitPrice', e.target.value)} />
-          <button type="button" onClick={() => onRemove(i)} style={{ background: 'var(--danger-muted)', color: 'var(--danger)', border: '1px solid var(--danger-border)', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }} disabled={lines.length === 1}>×</button>
-        </div>
-      ))}
-      <button type="button" className="btn btn-ghost btn-sm" onClick={onAdd} style={{ marginTop: 4 }}>+ Add Line</button>
-    </div>
-  );
-
   return (
     <div className="anim-up">
       <div className="page-hdr">
@@ -234,11 +254,11 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
                 <div className="form-grid-2" style={{ marginBottom: 20 }}>
                   <div>
                     <label className="form-label">Labour Cost (R)</label>
-                    <input type="number" className="inp" placeholder="0.00" min="0" step="0.01" value={labourCost} onChange={e => setLabourCost(e.target.value)} />
+                    <input type="number" className="inp" placeholder="0.00" min="0" step="0.01" value={labourCost} onChange={e => setLabourCost(e.target.value)} onKeyDown={numbersOnly} />
                   </div>
                   <div>
                     <label className="form-label">VAT Rate (%)</label>
-                    <input type="number" className="inp" placeholder="15" min="0" max="100" step="0.1" value={vatRate} onChange={e => setVatRate(e.target.value)} />
+                    <input type="number" className="inp" placeholder="15" min="0" max="100" step="0.1" value={vatRate} onChange={e => setVatRate(e.target.value)} onKeyDown={numbersOnly} />
                   </div>
                   <div>
                     <label className="form-label">Due Date</label>
@@ -429,8 +449,8 @@ export default function InvoicesClient({ initialInvoices, availableJobs, userRol
                     <LineItemsEditor lines={editLines} onAdd={addEditLine} onRemove={removeEditLine} onUpdate={updateEditLine} />
                   </div>
                   <div className="form-grid-2" style={{ marginBottom: 16 }}>
-                    <div><label className="form-label">Labour Cost (R)</label><input type="number" className="inp" min="0" step="0.01" value={editLabour} onChange={e => setEditLabour(e.target.value)} /></div>
-                    <div><label className="form-label">VAT Rate (%)</label><input type="number" className="inp" min="0" max="100" step="0.1" value={editVat} onChange={e => setEditVat(e.target.value)} /></div>
+                    <div><label className="form-label">Labour Cost (R)</label><input type="number" className="inp" min="0" step="0.01" value={editLabour} onChange={e => setEditLabour(e.target.value)} onKeyDown={numbersOnly} /></div>
+                    <div><label className="form-label">VAT Rate (%)</label><input type="number" className="inp" min="0" max="100" step="0.1" value={editVat} onChange={e => setEditVat(e.target.value)} onKeyDown={numbersOnly} /></div>
                     <div><label className="form-label">Due Date</label><input type="date" className="inp" value={editDue} onChange={e => setEditDue(e.target.value)} /></div>
                     <div><label className="form-label">Notes</label><input className="inp" placeholder="Payment notes…" value={editNotes} onChange={e => setEditNotes(e.target.value)} /></div>
                   </div>

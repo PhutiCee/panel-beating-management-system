@@ -1,4 +1,4 @@
-# 🚗 Mangena Panel Beater — Management Information System
+# 🚗 Mangena Panel Beater - Management Information System
 
 A full-stack workshop management system designed for panel beating businesses to manage jobs, invoices, customers, vehicles, and staff roles through a structured digital workflow.
 
@@ -7,8 +7,6 @@ Built as an Honours-level Advanced Database Systems project using modern web tec
 ---
 
 ## 📸 Application Screenshots
-
-> Replace or extend these images in `/screenshots`
 
 ### 🔐 Login
 

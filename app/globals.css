@@ -298,9 +298,7 @@ textarea.inp { resize: vertical; min-height: 80px; }
 .modal {
   background: var(--card); border: 1px solid var(--border-hi);
   border-radius: var(--radius-lg); width: 100%;
-  max-height: 90vh; 
-  overflow-y: auto;
-  margin: auto;
+  max-height: 90vh; overflow-y: auto;
   box-shadow: 0 24px 80px rgba(0,0,0,0.6);
 }
 .modal-header {

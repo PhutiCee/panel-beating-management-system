@@ -13,12 +13,12 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
+    "@prisma/client": "^6.19.2",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.34.2",
     "next": "16.1.6",
     "next-auth": "^4.24.14",
+    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -26,7 +26,6 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "prisma": "^7.8.0",
     "tailwindcss": "^4"
   }
 }
